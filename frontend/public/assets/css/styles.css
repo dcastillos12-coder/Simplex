@@ -102,7 +102,8 @@ header {
 }
 .layout {
   display: grid;
-  grid-template-columns: 360px minmax(0, 1fr);
+  /* Reserve enough room for six coefficient fields, including 3-digit values. */
+  grid-template-columns: minmax(380px, 410px) minmax(0, 1fr);
   align-items: start;
   gap: 20px;
 }
@@ -199,6 +200,11 @@ input[type="number"] {
   display: grid;
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   gap: 8px;
+}
+.coefs input[type="number"] {
+  padding: 10px 5px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
 }
 .coeflabel {
   color: var(--muted);
