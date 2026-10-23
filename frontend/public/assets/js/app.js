@@ -2,12 +2,37 @@
 const EPS = 1e-8;
 const $ = (id) => document.getElementById(id);
 let constraintRows = [];
-const fmt = (n) =>
-  Number.isFinite(n)
-    ? Math.abs(n) < EPS
-      ? "0"
-      : Number(n.toFixed(6)).toString()
-    : "—";
+function fraction(n) {
+  const value = Number(n.toFixed(6));
+  if (Math.abs(value) < EPS) return "0";
+  if (Number.isInteger(value)) return String(value);
+
+  const sign = value < 0 ? "-" : "";
+  const target = Math.abs(value);
+  let bestNumerator = Math.round(target);
+  let bestDenominator = 1;
+  let bestError = Math.abs(target - bestNumerator);
+
+  // Keep denominators readable while covering common simplex results.
+  for (let denominator = 2; denominator <= 1000; denominator += 1) {
+    const numerator = Math.round(target * denominator);
+    const error = Math.abs(target - numerator / denominator);
+    if (error < bestError) {
+      bestNumerator = numerator;
+      bestDenominator = denominator;
+      bestError = error;
+    }
+    if (bestError < 1e-6) break;
+  }
+
+  const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+  const divisor = gcd(bestNumerator, bestDenominator);
+  const numerator = bestNumerator / divisor;
+  const denominator = bestDenominator / divisor;
+  return `${sign}${numerator}/${denominator}`;
+}
+
+const fmt = (n) => (Number.isFinite(n) ? fraction(n) : "—");
 const h = (s) =>
   String(s).replace(
     /[&<>"']/g,
